@@ -1,5 +1,6 @@
 package com.gerenciamento.infrastructure.dto;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -7,6 +8,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
+@SuppressWarnings("unused")
 public class SaveProjectDataDTO {
 
     @NotNull(message = "O nome é obrigatório")
@@ -24,4 +26,28 @@ public class SaveProjectDataDTO {
     private final LocalDate finalDate;
 
     private final String status;
+
+    @AssertTrue(message = "A data final deve ser posterior à data inicial")
+    private boolean isInitialDateBeforeFinalDate() {
+        if (initialDate == null || finalDate == null)
+            return true;
+
+        return finalDate.isAfter(initialDate);
+    }
+
+    @AssertTrue(message = "A data inicial não pode estar no passado")
+    private boolean isInitialDateValid() {
+        if (initialDate == null)
+            return true;
+
+        return !initialDate.isBefore(LocalDate.now());
+    }
+
+    @AssertTrue(message = "Nome e descrição não podem ser iguais")
+    private boolean isNameDifferentFromDescription() {
+        if (name == null || description == null)
+            return true;
+
+        return !name.equalsIgnoreCase(description);
+    }
 }
