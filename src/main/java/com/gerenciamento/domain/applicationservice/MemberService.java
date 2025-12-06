@@ -40,4 +40,14 @@ public class MemberService {
         Member member = loadMemberById(memberId);
         member.setDeleted(true);
     }
+
+    @Transactional
+    public Member updateMember(String memberId, SaveMemberDataDTO saveMemberDataDTO) {
+        Member member = loadMemberById(memberId);
+
+        member.setName(saveMemberDataDTO.getName());
+        member.setEmail(saveMemberDataDTO.getEmail());
+
+        return member;
+    }
 }
