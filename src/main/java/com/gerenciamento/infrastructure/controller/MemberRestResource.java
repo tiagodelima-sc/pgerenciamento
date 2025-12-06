@@ -28,4 +28,11 @@ public class MemberRestResource {
                 .created(URI.create(PATH_MEMBERS + member.getId()))
                 .body(MemberDTO.create(member));
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<MemberDTO> loadMemberById(@PathVariable("id") String memberId) {
+        Member member = memberService.loadMemberById(memberId);
+
+        return ResponseEntity.ok(MemberDTO.create(member));
+    }
 }

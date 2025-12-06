@@ -1,6 +1,7 @@
 package com.gerenciamento.domain.applicationservice;
 
 import com.gerenciamento.domain.entity.Member;
+import com.gerenciamento.domain.exception.MemberNotFoundException;
 import com.gerenciamento.domain.repository.MemberRepository;
 import com.gerenciamento.infrastructure.dto.SaveMemberDataDTO;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +26,11 @@ public class MemberService {
 
         memberRepository.save(member);
         return member;
+    }
+
+    public Member loadMemberById(String memberId) {
+        return memberRepository
+                .findByIdAndDeleted(memberId, false)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
     }
 }
