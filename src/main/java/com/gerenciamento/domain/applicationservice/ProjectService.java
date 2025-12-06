@@ -7,7 +7,6 @@ import com.gerenciamento.domain.exception.ProjectNotFoundException;
 import com.gerenciamento.domain.model.ProjectStatus;
 import com.gerenciamento.domain.repository.ProjectRepository;
 import com.gerenciamento.infrastructure.dto.SaveProjectDataDTO;
-import com.sun.jdi.request.DuplicateRequestException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
