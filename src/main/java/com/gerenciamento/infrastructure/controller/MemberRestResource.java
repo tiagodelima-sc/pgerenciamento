@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 import static com.gerenciamento.infrastructure.controller.RestConstants.PATH_MEMBERS;
 
@@ -50,5 +51,16 @@ public class MemberRestResource {
     {
         Member member = memberService.updateMember(memberId, saveMemberDataDTO);
         return ResponseEntity.ok(MemberDTO.create(member));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<MemberDTO>> findMembers(
+            @RequestParam(value = "email", required = false) String email
+    ) {
+        List<Member> members = memberService.findMembers(email);
+
+        return ResponseEntity.ok(
+                members.stream().map(MemberDTO::create).toList()
+        );
     }
 }

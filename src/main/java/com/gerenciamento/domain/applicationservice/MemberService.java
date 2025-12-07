@@ -4,11 +4,13 @@ import com.gerenciamento.domain.entity.Member;
 import com.gerenciamento.domain.exception.DuplicateMemberException;
 import com.gerenciamento.domain.exception.MemberNotFoundException;
 import com.gerenciamento.domain.repository.MemberRepository;
+import com.gerenciamento.infrastructure.dto.MemberDTO;
 import com.gerenciamento.infrastructure.dto.SaveMemberDataDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -60,6 +62,21 @@ public class MemberService {
         member.setEmail(saveMemberDataDTO.getEmail());
 
         return member;
+    }
+
+    public List<Member> findMembers(String email) {
+        List<Member> members;
+
+        if (Objects.isNull(email)) {
+            members = memberRepository.findAllNotDeleted();
+        } else {
+            members = memberRepository
+                    .findByEmailAndDeleted(email, false)
+                    .map(List::of)
+                    .orElse(List.of());
+        }
+
+        return members;
     }
 
     private boolean existsMemberWithEmail(String email, String idToExclude) {
