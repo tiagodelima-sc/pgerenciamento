@@ -1,5 +1,6 @@
 package com.gerenciamento.domain.applicationservice;
 
+import com.gerenciamento.domain.entity.Member;
 import com.gerenciamento.domain.entity.Project;
 import com.gerenciamento.domain.exception.DuplicateProjectException;
 import com.gerenciamento.domain.exception.InvalidProjectStatusException;
@@ -12,7 +13,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +26,7 @@ import java.util.Objects;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final MemberService memberService;
 
     @Transactional
     public Project createProject(SaveProjectDataDTO saveProjectData){
@@ -37,6 +44,8 @@ public class ProjectService {
                 .build();
 
         projectRepository.save(project);
+
+        addMembersToProjects(saveProjectData.getMemberIds(), project);
 
         log.info("Projeto Criado: {}", project);
         return project;
@@ -68,6 +77,8 @@ public class ProjectService {
         project.setFinalDate  (saveProjectData.getFinalDate());
         project.setStatus     (convertToProjectStatus(saveProjectData.getStatus()));
 
+        addMembersToProjects(saveProjectData.getMemberIds(), project);
+
         return project;
     }
 
@@ -84,5 +95,16 @@ public class ProjectService {
                 .findByName(name)
                 .filter(p-> !Objects.equals(p.getId(), idToExclude))
                 .isPresent();
+    }
+
+    private void addMembersToProjects(Set<String> membersId, Project project) {
+        List<Member> members = Optional
+                .ofNullable(membersId)
+                .orElse(Set.of())
+                .stream()
+                .map(memberService::loadMemberById)
+                .collect(toList());
+
+        project.setMembers(members);
     }
 }

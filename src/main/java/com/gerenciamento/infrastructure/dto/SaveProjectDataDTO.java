@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 @SuppressWarnings("unused")
@@ -26,6 +27,8 @@ public class SaveProjectDataDTO {
     private final LocalDate finalDate;
 
     private final String status;
+
+    private final Set<String> memberIds;
 
     @AssertTrue(message = "A data final deve ser posterior à data inicial")
     private boolean isInitialDateBeforeFinalDate() {
