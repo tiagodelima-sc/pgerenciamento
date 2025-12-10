@@ -1,0 +1,70 @@
+package com.gerenciamento.domain.applicationservice;
+
+import com.gerenciamento.domain.entity.Task;
+import com.gerenciamento.domain.exception.InvalidProjectStatusException;
+import com.gerenciamento.domain.exception.InvalidTaskStatusException;
+import com.gerenciamento.domain.exception.TaskNotFoundException;
+import com.gerenciamento.domain.model.ProjectStatus;
+import com.gerenciamento.domain.model.TaskStatus;
+import com.gerenciamento.domain.repository.TaskRepository;
+import com.gerenciamento.infrastructure.dto.SaveTaskDataDTO;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class TaskService {
+
+    private final TaskRepository taskRepository;
+
+    @Transactional
+    public Task createTask(SaveTaskDataDTO saveTaskDataDTO){
+
+        Task task = Task
+                .builder     ()
+                .title       (saveTaskDataDTO.getTitle())
+                .description (saveTaskDataDTO.getDescription())
+                .numberOfDays(saveTaskDataDTO.getNumberOfDays())
+                .status      (TaskStatus.PENDING)
+                .build       ();
+
+        taskRepository.save(task);
+
+        return task;
+    }
+
+    public Task loadTask(String id) {
+        return taskRepository
+                .findById   (id)
+                .orElseThrow(() -> new TaskNotFoundException(id));
+    }
+
+    @Transactional
+    public void deleteTask(String id) {
+        Task task = loadTask(id);
+        taskRepository.delete(task);
+    }
+
+    @Transactional
+    public Task updateTask(String id, SaveTaskDataDTO saveTaskDataDTO) {
+        Task task = loadTask(id);
+
+        task.setTitle       (saveTaskDataDTO.getTitle());
+        task.setDescription (saveTaskDataDTO.getDescription());
+        task.setNumberOfDays(saveTaskDataDTO.getNumberOfDays());
+        task.setStatus      (convertToTaskStatus(saveTaskDataDTO.getStatus()));
+
+        return task;
+    }
+
+    private TaskStatus convertToTaskStatus(String statusStr) {
+        try {
+            return TaskStatus.valueOf(statusStr);
+        } catch (IllegalArgumentException | NullPointerException e) {
+            throw new InvalidTaskStatusException(statusStr);
+        }
+    }
+}
