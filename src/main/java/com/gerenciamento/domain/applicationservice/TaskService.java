@@ -1,5 +1,7 @@
 package com.gerenciamento.domain.applicationservice;
 
+import com.gerenciamento.domain.entity.Member;
+import com.gerenciamento.domain.entity.Project;
 import com.gerenciamento.domain.entity.Task;
 import com.gerenciamento.domain.exception.InvalidProjectStatusException;
 import com.gerenciamento.domain.exception.InvalidTaskStatusException;
@@ -13,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -20,16 +24,21 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
 
+    private final ProjectService projectService;
+    private final MemberService memberService;
+
     @Transactional
     public Task createTask(SaveTaskDataDTO saveTaskDataDTO){
 
         Task task = Task
-                .builder     ()
-                .title       (saveTaskDataDTO.getTitle())
-                .description (saveTaskDataDTO.getDescription())
-                .numberOfDays(saveTaskDataDTO.getNumberOfDays())
-                .status      (TaskStatus.PENDING)
-                .build       ();
+                .builder       ()
+                .title         (saveTaskDataDTO.getTitle())
+                .description   (saveTaskDataDTO.getDescription())
+                .numberOfDays  (saveTaskDataDTO.getNumberOfDays())
+                .status        (TaskStatus.PENDING)
+                .project       (Objects.isNull(saveTaskDataDTO.getProjectId()) ? null : projectService.loadProject(saveTaskDataDTO.getProjectId()))
+                .assignedMember(Objects.isNull(saveTaskDataDTO.getMemberId())  ? null : memberService.loadMemberById(saveTaskDataDTO.getMemberId()))
+                .build         ();
 
         taskRepository.save(task);
 
