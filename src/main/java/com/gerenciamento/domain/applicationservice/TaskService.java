@@ -53,18 +53,19 @@ public class TaskService {
 
     @Transactional
     public void deleteTask(String id) {
-        Task task = loadTask(id);
-        taskRepository.delete(task);
+        taskRepository.delete(loadTask(id));
     }
 
     @Transactional
     public Task updateTask(String id, SaveTaskDataDTO saveTaskDataDTO) {
         Task task = loadTask(id);
 
-        task.setTitle       (saveTaskDataDTO.getTitle());
-        task.setDescription (saveTaskDataDTO.getDescription());
-        task.setNumberOfDays(saveTaskDataDTO.getNumberOfDays());
-        task.setStatus      (convertToTaskStatus(saveTaskDataDTO.getStatus()));
+        task.setTitle         (saveTaskDataDTO.getTitle());
+        task.setDescription   (saveTaskDataDTO.getDescription());
+        task.setNumberOfDays  (saveTaskDataDTO.getNumberOfDays());
+        task.setStatus        (convertToTaskStatus(saveTaskDataDTO.getStatus()));
+        task.setProject       (Objects.isNull(saveTaskDataDTO.getProjectId()) ? null : projectService.loadProject(saveTaskDataDTO.getProjectId()));
+        task.setAssignedMember(Objects.isNull(saveTaskDataDTO.getMemberId())  ? null : memberService.loadMemberById(saveTaskDataDTO.getMemberId()));
 
         return task;
     }
