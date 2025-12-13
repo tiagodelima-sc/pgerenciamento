@@ -15,7 +15,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -68,6 +70,19 @@ public class TaskService {
         task.setAssignedMember(Objects.isNull(saveTaskDataDTO.getMemberId())  ? null : memberService.loadMemberById(saveTaskDataDTO.getMemberId()));
 
         return task;
+    }
+
+    public List<Task> findTasks(
+        String projectId,
+        String memberId,
+        String status,
+        String partialTitle
+    ) {
+        return taskRepository.find(
+                projectId,
+                memberId,
+                Optional.ofNullable(status).map(this::convertToTaskStatus).orElse(null),
+                partialTitle);
     }
 
     private TaskStatus convertToTaskStatus(String statusStr) {
