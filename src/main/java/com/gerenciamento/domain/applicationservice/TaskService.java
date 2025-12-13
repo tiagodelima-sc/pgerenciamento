@@ -1,23 +1,23 @@
 package com.gerenciamento.domain.applicationservice;
 
-import com.gerenciamento.domain.entity.Member;
-import com.gerenciamento.domain.entity.Project;
 import com.gerenciamento.domain.entity.Task;
-import com.gerenciamento.domain.exception.InvalidProjectStatusException;
 import com.gerenciamento.domain.exception.InvalidTaskStatusException;
 import com.gerenciamento.domain.exception.TaskNotFoundException;
-import com.gerenciamento.domain.model.ProjectStatus;
 import com.gerenciamento.domain.model.TaskStatus;
 import com.gerenciamento.domain.repository.TaskRepository;
+import com.gerenciamento.infrastructure.config.AppConfigProperties;
 import com.gerenciamento.infrastructure.dto.SaveTaskDataDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import static com.gerenciamento.infrastructure.util.PaginationHelper.createPageable;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +28,8 @@ public class TaskService {
 
     private final ProjectService projectService;
     private final MemberService memberService;
+
+    private final AppConfigProperties appConfigProperties;
 
     @Transactional
     public Task createTask(SaveTaskDataDTO saveTaskDataDTO){
@@ -72,17 +74,22 @@ public class TaskService {
         return task;
     }
 
-    public List<Task> findTasks(
+    public Page<Task> findTasks(
         String projectId,
         String memberId,
         String status,
-        String partialTitle
+        String partialTitle,
+        Integer page,
+        String directionStr,
+        List<String> properties
     ) {
         return taskRepository.find(
                 projectId,
                 memberId,
                 Optional.ofNullable(status).map(this::convertToTaskStatus).orElse(null),
-                partialTitle);
+                partialTitle,
+                createPageable(page, appConfigProperties.getPageSize(), directionStr, properties)
+        );
     }
 
     private TaskStatus convertToTaskStatus(String statusStr) {
