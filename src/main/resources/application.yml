@@ -7,14 +7,13 @@ spring:
   application:
     name: gerenciamento
   datasource:
-    url: jdbc:h2:mem:test
-    driverClassName: org.h2.Driver
-    username: sa
-    password:
-  h2:
-    console:
-      enabled: true
+    url: jdbc:mysql://localhost:3306/pgerenciador
+    driverClassName: com.mysql.cj.jdbc.Driver
+    username: root
+    password: admin
   jpa:
     show-sql: true
+    hibernate:
+      ddl-auto: update
 app:
   pageSize: 3
