@@ -16,4 +16,8 @@ spring:
     hibernate:
       ddl-auto: update
 app:
-  pageSize: 3
+  general:
+    pageSize: 3
+  security:
+    apiKey: O8OZCaaCd5CDFiq2k31RrXrs1c9fRM86
+

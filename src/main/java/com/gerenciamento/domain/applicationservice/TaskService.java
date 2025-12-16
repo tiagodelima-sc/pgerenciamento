@@ -88,7 +88,7 @@ public class TaskService {
                 memberId,
                 Optional.ofNullable(status).map(this::convertToTaskStatus).orElse(null),
                 partialTitle,
-                createPageable(page, appConfigProperties.getPageSize(), directionStr, properties)
+                createPageable(page, appConfigProperties.getGeneral().getPageSize(), directionStr, properties)
         );
     }
 
