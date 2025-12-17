@@ -15,9 +15,15 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: gerenciamentodb
 app:
   general:
     pageSize: 3
   security:
-    apiKey: O8OZCaaCd5CDFiq2k31RrXrs1c9fRM86
+    masterApiKey: O8OZCaaCd5CDFiq2k31RrXrs1c9fRM86
+    expirationDays: 2
 
