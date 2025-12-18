@@ -1,0 +1,62 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+package "Domain Entity" {
+
+  class Member {
+    id : String
+    secret : String
+    name : String
+    email : String
+    deleted : Boolean
+  }
+
+  class Project {
+    id : String
+    name : String
+    description : String
+    initialDate : LocalDate
+    finalDate : LocalDate
+    status : ProjectStatus
+  }
+
+  class Task {
+    id : String
+    title : String
+    description : String
+    numberOfDays : Integer
+    status : TaskStatus
+  }
+
+}
+
+package "Enums" {
+
+  enum ProjectStatus {
+    PENDING
+    IN_PROGRESS
+    FINISHED
+  }
+
+  enum TaskStatus {
+    PENDING
+    IN_PROGRESS
+    FINISHED
+  }
+
+}
+
+' =====================
+' RELATIONSHIPS
+' =====================
+
+' Project ↔ Member (Many-to-Many)
+Project "*" -- "*" Member : members
+
+' Project ↔ Task (One-to-Many)
+Project "1" -- "*" Task : tasks
+
+' Member ↔ Task (One-to-Many)
+Member "1" -- "*" Task : assignedMember
+
+@enduml
